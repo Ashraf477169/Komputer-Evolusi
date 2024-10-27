@@ -14,10 +14,10 @@ POP_SIZE = 500
 MUT_RATE = 0.2
 
 #TARGET: Our goal.
-TARGET = 'fakhitah'
+TARGET = 'Amirul'
 
 #GENES: Options from which our population would be created.
-GENES = ' abcdefghijklmnopqrstuvwxyz'
+GENES = ' abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 #initialization
 
