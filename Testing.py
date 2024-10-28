@@ -69,17 +69,11 @@ def main(POP_SIZE, MUT_RATE, TARGET, GENES):
         population = replace(new_gen, population)
         population = sorted(population, key=lambda x: x[1])
 
-        st.write(f"String: {''.join(population[0][0])} Generation: {generation} Fitness: {population[0][1]}")
-        
+        best_string = "".join(population[0][0])
+        st.write(f"String: {population[0][0]} Generation: {generation} Fitness: {population[0][1]}")
+
         if population[0][1] == 0:
             st.write("Target found")
-             if (population[0][1] == 0):
-        print('Target found')
-        print('String: ' + str(population[0][0]) + ' Generation: ' + str(generation) + ' Fitness: ' + str(population[0][1]))
-        break
-      print('String: ' + str(population[0][0]) + ' Generation: ' + str(generation) + ' Fitness: ' + str(population[0][1]))
-      generation+=1
-
             break
 
         generation += 1
