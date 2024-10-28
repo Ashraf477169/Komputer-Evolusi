@@ -7,128 +7,75 @@ st.header("Genetic Algorithm", divider="gray")
 
 import random
 
-#POP_SIZE: Number of Chromosomes in our list.
+# Default values
 POP_SIZE = 500
-
-#MUT_RATE: Rate at which our string will be changed.
-MUT_RATE = 0.2
-
-#TARGET: Our goal.
-#TARGET = 'Amirul' 
-TARGET = st.text_input("Enter your name","Amirul")
-
-#GENES: Options from which our population would be created.
 GENES = ' abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
-#initialization
+# User inputs for target string and mutation rate
+TARGET = st.text_input("Enter your name", "Amirul")
+MUT_RATE = st.number_input("Enter your mutation rate", min_value=0.0, max_value=1.0, value=0.1, step=0.01)
 
 def initialize_pop(TARGET):
-  population = list()
-  tar_len = len(TARGET)
-
-  for i in range(POP_SIZE):
-      temp = list()
-      for j in range(tar_len):
-          temp.append(random.choice(GENES))
-      population.append(temp)
-
-  return population
-
-    #fitness calculation
-#0 fitness means target found
+    population = []
+    tar_len = len(TARGET)
+    for _ in range(POP_SIZE):
+        temp = [random.choice(GENES) for _ in range(tar_len)]
+        population.append(temp)
+    return population
 
 def fitness_cal(TARGET, chromo_from_pop):
-  difference = 0
-  for tar_char, chromo_char in zip(TARGET, chromo_from_pop):
-      if tar_char != chromo_char:
-          difference+=1
-  return [chromo_from_pop, difference]
+    difference = sum(1 for tar_char, chromo_char in zip(TARGET, chromo_from_pop) if tar_char != chromo_char)
+    return [chromo_from_pop, difference]
 
-    #selection
-#returns top 50% population sorted according to fitness
-
-def selection(population, TARGET):
-  sorted_chromo_pop = sorted(population, key= lambda x: x[1])
-  return sorted_chromo_pop[:int(0.5*POP_SIZE)]
-
-    #crossover
+def selection(population):
+    sorted_chromo_pop = sorted(population, key=lambda x: x[1])
+    return sorted_chromo_pop[:POP_SIZE // 2]
 
 def crossover(selected_chromo, CHROMO_LEN, population):
-  offspring_cross = []
-  for i in range(int(POP_SIZE)):
-    parent1 = random.choice(selected_chromo)
-    parent2 = random.choice(population[:int(POP_SIZE*50)])
-
-    p1 = parent1[0]
-    p2 = parent2[0]
-
-    crossover_point = random.randint(1, CHROMO_LEN-1)
-    child =  p1[:crossover_point] + p2[crossover_point:]
-    offspring_cross.extend([child])
-  return offspring_cross
-
-    #mutation
+    offspring_cross = []
+    for _ in range(POP_SIZE):
+        parent1 = random.choice(selected_chromo)
+        parent2 = random.choice(population[:POP_SIZE // 2])
+        crossover_point = random.randint(1, CHROMO_LEN - 1)
+        child = parent1[0][:crossover_point] + parent2[0][crossover_point:]
+        offspring_cross.append(child)
+    return offspring_cross
 
 def mutate(offspring, MUT_RATE):
-  mutated_offspring = []
-
-  for arr in offspring:
-      for i in range(len(arr)):
-          if random.random() < MUT_RATE:
-              arr[i] = random.choice(GENES)
-      mutated_offspring.append(arr)
-  return mutated_offspring
-
-    #replacement
+    for arr in offspring:
+        for i in range(len(arr)):
+            if random.random() < MUT_RATE:
+                arr[i] = random.choice(GENES)
+    return offspring
 
 def replace(new_gen, population):
-  for _ in range(len(population)):
-      if population[_][1] > new_gen[_][1]:
-        population[_][0] = new_gen[_][0]
-        population[_][1] = new_gen[_][1]
-  return population
-
-    #main
+    for i in range(len(population)):
+        if population[i][1] > new_gen[i][1]:
+            population[i] = new_gen[i]
+    return population
 
 def main(POP_SIZE, MUT_RATE, TARGET, GENES):
-    # 1) initialize population
     initial_population = initialize_pop(TARGET)
     found = False
-    population = []
+    population = [fitness_cal(TARGET, chromo) for chromo in initial_population]
     generation = 1
 
-    # 2) Calculating the fitness for the current population
-    for _ in range(len(initial_population)):
-        population.append(fitness_cal(TARGET, initial_population[_]))
-
-    # now population has 2 things, [chromosome, fitness]
-    # 3) now we loop until TARGET is found
     while not found:
+        selected = selection(population)
+        crossovered = crossover(selected, len(TARGET), population)
+        mutated = mutate(crossovered, MUT_RATE)
+        new_gen = [fitness_cal(TARGET, chromo) for chromo in mutated]
 
-      # 3.1) select best people from current population
-      selected = selection(population, TARGET)
+        population = replace(new_gen, population)
+        population = sorted(population, key=lambda x: x[1])
 
-      # 3.2) mate parents to make new generation
-      population = sorted(population, key= lambda x:x[1])
-      crossovered = crossover(selected, len(TARGET), population)
+        st.write(f"String: {''.join(population[0][0])} Generation: {generation} Fitness: {population[0][1]}")
+        
+        if population[0][1] == 0:
+            st.write("Target found")
+            break
 
-      # 3.3) mutating the children to diversify the new generation
-      mutated = mutate(crossovered, MUT_RATE)
+        generation += 1
 
-      new_gen = []
-      for _ in mutated:
-          new_gen.append(fitness_cal(TARGET, _))
-
-      # 3.4) replacement of bad population with new generation
-      # we sort here first to compare the least fit population with the most fit new_gen
-
-      population = replace(new_gen, population)
-
-
-      if (population[0][1] == 0):
-        st.write('Target found')
-        st.write('String: ' + str(population[0][0]) + ' Generation: ' + str(generation) + ' Fitness: ' + str(population[0][1]))
-        break
-      st.write('String: ' + str(population[0][0]) + ' Generation: ' + str(generation) + ' Fitness: ' + str(population[0][1]))
-      generation+=1
-result = main(POP_SIZE, MUT_RATE, TARGET, GENES)
+if st.button("Calculate"):
+    main(POP_SIZE, MUT_RATE, TARGET, GENES)
