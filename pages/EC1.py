@@ -270,12 +270,12 @@ for i in range(0, n_population):
 
 
 minimum_distance = min(total_dist_all_individuals)
- st.write (minimum_distance)
+ st.write (minimum distance)
 
 #shortest path
 # shortest_path = offspring_list[index_minimum]
 shortest_path = best_mixed_offspring[index_minimum]
-st.write (shortest_path)
+st.write (shortest path)
 
 x_shortest = []
 y_shortest = []
@@ -309,5 +309,5 @@ for i, txt in enumerate(shortest_path):
 
 fig.set_size_inches(16, 12)
 # plt.grid(color='k', linestyle='dotted')
-plt.show()
+
 st.pyplot(fig)
