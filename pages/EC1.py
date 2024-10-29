@@ -270,7 +270,7 @@ for i in range(0, n_population):
 
 
 minimum_distance = min(total_dist_all_individuals)
- st.write (minimum distance)
+st.write (minimum distance)
 
 #shortest path
 # shortest_path = offspring_list[index_minimum]
