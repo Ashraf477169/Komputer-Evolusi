@@ -9,8 +9,8 @@ import pandas as pd
 import seaborn as sns
 import streamlit as st
 
-x = [6,1,3,7,10,15,8,4,7,1.5]
-y = [1,2,1,4.5,-1,2.5,11,6,9,12]
+x = [1,2,3,7,10,15,8,4,7,1.5]
+y = [6,2,1,4.5,-1,2.5,11,6,9,12]
 cities_names = ["Gliwice", "Cairo", "Rome", "Krakow", "Paris", "Alexandria", "Berlin", "Tokyo", "Rio", "Budapest"]
 city_coords = dict(zip(cities_names, zip(x, y)))
 n_population = 250
