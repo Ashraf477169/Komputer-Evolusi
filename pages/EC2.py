@@ -10,8 +10,8 @@ import seaborn as sns
 import streamlit as st
 
 x = [1,2,3,7,10,15,8,4,7,1.5]
-y = [6,2,1,4.5,-1,2.5,11,6,9,12]
-cities_names = ["Gliwice", "Cairo", "Rome", "Krakow", "Paris", "Alexandria", "Berlin", "Tokyo", "Rio", "Budapest"]
+y = [6,3,1,4,-1.5,2.5,10,6,9,11]
+cities_names = ["Perlis", "Kedah", "Perak", "Kelantan", "Terengganu", "Pahang", "Johor", "Melaka", "Negeri Sembilan", "Kuala Lumpur"]
 city_coords = dict(zip(cities_names, zip(x, y)))
 n_population = 250
 crossover_per = 0.8
