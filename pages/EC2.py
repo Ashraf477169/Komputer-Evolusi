@@ -27,7 +27,7 @@ city_icons = {
     "Kedah": "♖",
     "Perak": "♗",
     "Kelantan": "♘",
-    "Terangganu": "♙",
+    "Terengganu": "♙",
     "Pahang": "♔",
     "Johor": "♚",
     "Melaka": "♛",
