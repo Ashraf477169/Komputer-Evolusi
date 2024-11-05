@@ -21,8 +21,7 @@ for i, city in enumerate(cities_names):
     with col3:
         y_coord = st.number_input(f"y-coordinate (City {i+1})", value=random.randint(0, 10), step=1, key=f"y_{i}")
     city_coords[city_name] = (x_coord, y_coord)
-# Butang submit
-if st.button("Submit"):
+
 # Parameter untuk algoritma genetika
 n_population = 250
 crossover_per = 0.8
