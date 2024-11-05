@@ -9,10 +9,6 @@ import streamlit as st
 cities_names = ["Kuala Lumpur", "Pahang", "Kelantan", "Terengganu", "Kedah", "Melaka", "Johor", "Perlis", "Perak"]
 # Pastel Pallete
 
-
-
-
-
 # Input koordinat untuk setiap kota
 st.title("Input Coordinates for Cities")
 city_coords = {}
@@ -34,31 +30,37 @@ n_generations = 200
 
 # Palet warna pastel untuk visualisasi
 colors = sns.color_palette("pastel", len(city_coords))
-# City Icons
+# Ikon kota yang baru dimasukkan oleh pengguna
 city_icons = {
-    "PERLIS": "♕",
-    "KEDAH": "♖",
-    "PENANG": "♗",
-    "PERAK": "♘",
-    "KELANTAN": "♙",
-    "PAHANG": "♔",
-    "JOHOR": "♚",
-    "MELAKA": "♛",
-    "SELANGOR": "♜",
-    "TERENGGANU": "♝"
+    "Kuala Lumpur": "♔",
+    "Pahang": "♕",
+    "Kelantan": "♖",
+    "Terengganu": "♗",
+    "Kedah": "♘",
+    "Melaka": "♙",
+    "Johor": "♚",
+    "Perlis": "♛",
+    "Perak": "♜"
 }
-# Visualisasi awal kota dan rute
+
+# Visualisasi awal kota dan rute dengan ikon
 fig, ax = plt.subplots()
 ax.grid(False)
 for i, (city, (city_x, city_y)) in enumerate(city_coords.items()):
     color = colors[i]
+    icon = city_icons.get(city, "•")  # Gunakan ikon atau '•' jika ikon tiada
     ax.scatter(city_x, city_y, c=[color], s=1200, zorder=2)
-    ax.annotate(city, (city_x, city_y), fontsize=12, ha='center', va='center')
+    ax.annotate(icon, (city_x, city_y), fontsize=30, ha='center', va='center', zorder=3)  # Letak ikon
+    ax.annotate(city, (city_x, city_y), fontsize=12, ha='center', va='bottom', xytext=(0, -30), textcoords='offset points')
+    
+    # Sambungkan garis antara kota
     for j, (other_city, (other_x, other_y)) in enumerate(city_coords.items()):
         if i != j:
             ax.plot([city_x, other_x], [city_y, other_y], color='gray', linestyle='-', linewidth=1, alpha=0.1)
+
 fig.set_size_inches(10, 8)
 st.pyplot(fig)
+
 
 # Fungsi-fungsi untuk algoritma genetika
 def initial_population(cities_list, n_population=250):
