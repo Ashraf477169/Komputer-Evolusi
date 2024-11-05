@@ -42,7 +42,8 @@ city_icons = {
     "Perlis": "♛",
     "Perak": "♜"
 }
-
+# Butang Submit
+if st.button("Submit"):
 # Visualisasi awal kota dan rute dengan ikon
 fig, ax = plt.subplots()
 ax.grid(False)
@@ -125,8 +126,6 @@ def run_ga(cities_names, n_population, n_generations, crossover_per, mutation_pe
             offspring_list.extend([offspring_1, offspring_2])
         population = offspring_list + parents_list
     return population
-# Butang Submit
-if st.button("Submit"):
 # Jalankan algoritma dan paparkan hasil
 best_population = run_ga(cities_names, n_population, n_generations, crossover_per, mutation_per)
 best_route = min(best_population, key=total_dist_individual)
