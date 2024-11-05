@@ -8,10 +8,10 @@ import pandas as pd
 import seaborn as sns
 import streamlit as st
 
-# Nama kota-kota yang tersedia
-x = [0, 3, 6, 7, 15, 10, 16, 5, 8, 1.5]
-y = [1, 2, 1, 4.5, -1, 2.5, 11, 6, 9, 12]
+# Nama kota-kota yang tersedia dan koordinat awal sebagai float
 cities_names = ["Kuala Lumpur", "Pahang", "Kelantan", "Terengganu", "Kedah", "Melaka", "Johor", "Perlis", "Perak"]
+x = [0.0, 3.0, 6.0, 7.0, 15.0, 10.0, 16.0, 5.0, 8.0]
+y = [1.0, 2.0, 1.0, 4.5, -1.0, 2.5, 11.0, 6.0, 9.0]
 
 # Input koordinat untuk setiap kota
 st.title("Input Coordinates for Cities")
@@ -21,9 +21,9 @@ for i, city in enumerate(cities_names):
     with col1:
         city_name = st.text_input(f"City {i+1}", city, key=f"city_name_{i}")
     with col2:
-        x_coord = st.number_input(f"x-coordinate (City {i+1})", value=x[i], step=1.0, key=f"x_{i}")
+        x_coord = st.number_input(f"x-coordinate (City {i+1})", value=float(x[i]), step=1.0, key=f"x_{i}")
     with col3:
-        y_coord = st.number_input(f"y-coordinate (City {i+1})", value=y[i], step=1.0, key=f"y_{i}")
+        y_coord = st.number_input(f"y-coordinate (City {i+1})", value=float(y[i]), step=1.0, key=f"y_{i}")
     city_coords[city_name] = (x_coord, y_coord)
 
 # Parameter untuk algoritma genetika
@@ -34,17 +34,9 @@ n_generations = 200
 
 # Palet warna pastel untuk visualisasi
 colors = sns.color_palette("pastel", len(city_coords))
-# Ikon kota yang baru dimasukkan oleh pengguna
 city_icons = {
-    "Kuala Lumpur": "♔",
-    "Pahang": "♕",
-    "Kelantan": "♖",
-    "Terengganu": "♗",
-    "Kedah": "♘",
-    "Melaka": "♙",
-    "Johor": "♚",
-    "Perlis": "♛",
-    "Perak": "♜"
+    "Kuala Lumpur": "♔", "Pahang": "♕", "Kelantan": "♖", "Terengganu": "♗", 
+    "Kedah": "♘", "Melaka": "♙", "Johor": "♚", "Perlis": "♛", "Perak": "♜"
 }
 
 # Butang Submit
@@ -54,12 +46,10 @@ if st.button("Submit"):
     ax.grid(False)
     for i, (city, (city_x, city_y)) in enumerate(city_coords.items()):
         color = colors[i]
-        icon = city_icons.get(city, "•")  # Gunakan ikon atau '•' jika ikon tiada
+        icon = city_icons.get(city, "•")
         ax.scatter(city_x, city_y, c=[color], s=1200, zorder=2)
-        ax.annotate(icon, (city_x, city_y), fontsize=30, ha='center', va='center', zorder=3)  # Letak ikon
+        ax.annotate(icon, (city_x, city_y), fontsize=30, ha='center', va='center', zorder=3)
         ax.annotate(city, (city_x, city_y), fontsize=12, ha='center', va='bottom', xytext=(0, -30), textcoords='offset points')
-        
-        # Sambungkan garis antara kota
         for j, (other_city, (other_x, other_y)) in enumerate(city_coords.items()):
             if i != j:
                 ax.plot([city_x, other_x], [city_y, other_y], color='gray', linestyle='-', linewidth=1, alpha=0.1)
