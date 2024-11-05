@@ -1,10 +1,8 @@
 import matplotlib.pyplot as plt
-from itertools import permutations, combinations
+from itertools import permutations
 from random import shuffle
 import random
 import numpy as np
-import statistics
-import pandas as pd
 import seaborn as sns
 import streamlit as st
 
@@ -35,7 +33,8 @@ city_icons = {
     "TERENGGANU": "♝"
 }
 
-# Visualisasi awal
+# Visualisasi awal kota dan rute
+st.title("Travelling Salesman Problem using Genetic Algorithm")
 fig, ax = plt.subplots()
 ax.grid(False)
 for i, (city, (city_x, city_y)) in enumerate(city_coords.items()):
@@ -47,9 +46,7 @@ for i, (city, (city_x, city_y)) in enumerate(city_coords.items()):
     for j, (other_city, (other_x, other_y)) in enumerate(city_coords.items()):
         if i != j:
             ax.plot([city_x, other_x], [city_y, other_y], color='gray', linestyle='-', linewidth=1, alpha=0.1)
-
 fig.set_size_inches(16, 12)
-plt.show()
 st.pyplot(fig)
 
 # Fungsi untuk inisialisasi populasi
@@ -111,9 +108,9 @@ def mutation(offspring):
 # Menjalankan algoritma genetika
 def run_ga(cities_names, n_population, n_generations, crossover_per, mutation_per):
     population = initial_population(cities_names, n_population)
-    fitness_probs = fitness_prob(population)
-    parents_list = [roulette_wheel(population, fitness_probs) for _ in range(int(crossover_per * n_population))]
     for _ in range(n_generations):
+        fitness_probs = fitness_prob(population)
+        parents_list = [roulette_wheel(population, fitness_probs) for _ in range(int(crossover_per * n_population))]
         offspring_list = []
         for i in range(0, len(parents_list), 2):
             offspring_1, offspring_2 = crossover(parents_list[i], parents_list[i+1])
@@ -122,14 +119,7 @@ def run_ga(cities_names, n_population, n_generations, crossover_per, mutation_pe
             if random.random() > (1 - mutation_per):
                 offspring_2 = mutation(offspring_2)
             offspring_list.extend([offspring_1, offspring_2])
-        mixed_offspring = parents_list + offspring_list
-        fitness_probs = fitness_prob(mixed_offspring)
-        sorted_fitness_indices = np.argsort(fitness_probs)[::-1]
-        best_mixed_offspring = [mixed_offspring[i] for i in sorted_fitness_indices[:n_population]]
-        old_population_indices = [random.randint(0, n_population - 1) for _ in range(int(0.2 * n_population))]
-        best_mixed_offspring += [population[i] for i in old_population_indices]
-        random.shuffle(best_mixed_offspring)
-        population = best_mixed_offspring
+        population = offspring_list + parents_list
     return population
 
 # Jalankan dan tampilkan hasil terbaik
@@ -137,10 +127,10 @@ best_mixed_offspring = run_ga(cities_names, n_population, n_generations, crossov
 total_dist_all_individuals = [total_dist_individual(ind) for ind in best_mixed_offspring]
 index_minimum = np.argmin(total_dist_all_individuals)
 minimum_distance = min(total_dist_all_individuals)
-st.write(minimum_distance)
+st.write("Minimum Distance:", minimum_distance)
 
 shortest_path = best_mixed_offspring[index_minimum]
-st.write(shortest_path)
+st.write("Shortest Path:", shortest_path)
 
 # Visualisasi rute terbaik
 x_shortest = [city_coords[city][0] for city in shortest_path] + [city_coords[shortest_path[0]][0]]
