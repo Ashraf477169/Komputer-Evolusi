@@ -1,6 +1,10 @@
 import matplotlib.pyplot as plt
-from itertools import permutations
+from itertools import permutations, combinations
+from random import shuffle
+import random
 import numpy as np
+import statistics
+import pandas as pd
 import seaborn as sns
 import streamlit as st
 
