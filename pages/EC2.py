@@ -9,6 +9,8 @@ import seaborn as sns
 import streamlit as st
 
 # Nama kota-kota yang tersedia
+x = [0, 3, 6, 7, 15, 10, 16, 5, 8, 1.5]
+y = [1, 2, 1, 4.5, -1, 2.5, 11, 6, 9, 12]
 cities_names = ["Kuala Lumpur", "Pahang", "Kelantan", "Terengganu", "Kedah", "Melaka", "Johor", "Perlis", "Perak"]
 
 # Input koordinat untuk setiap kota
@@ -19,9 +21,9 @@ for i, city in enumerate(cities_names):
     with col1:
         city_name = st.text_input(f"City {i+1}", city, key=f"city_name_{i}")
     with col2:
-        x_coord = st.number_input(f"x-coordinate (City {i+1})", step=1, key=f"x_{i}")
+        x_coord = st.number_input(f"x-coordinate (City {i+1})", value=x[i], step=1.0, key=f"x_{i}")
     with col3:
-        y_coord = st.number_input(f"y-coordinate (City {i+1})", step=1, key=f"y_{i}")
+        y_coord = st.number_input(f"y-coordinate (City {i+1})", value=y[i], step=1.0, key=f"y_{i}")
     city_coords[city_name] = (x_coord, y_coord)
 
 # Parameter untuk algoritma genetika
@@ -44,6 +46,7 @@ city_icons = {
     "Perlis": "♛",
     "Perak": "♜"
 }
+
 # Butang Submit
 if st.button("Submit"):
     # Visualisasi awal kota dan rute dengan ikon
@@ -63,7 +66,6 @@ if st.button("Submit"):
 
     fig.set_size_inches(10, 8)
     st.pyplot(fig)
-
 
 # Fungsi-fungsi untuk algoritma genetika
 def initial_population(cities_list, n_population=250):
@@ -136,7 +138,6 @@ min_distance = total_dist_individual(best_route)
 
 st.write("Best Route:", best_route)
 st.write("Minimum Distance:", min_distance)
-
 
 # Visualisasi rute terbaik
 x_best_route = [city_coords[city][0] for city in best_route] + [city_coords[best_route[0]][0]]
