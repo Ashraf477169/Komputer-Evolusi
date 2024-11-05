@@ -7,6 +7,23 @@ import streamlit as st
 
 # Nama kota-kota yang tersedia
 cities_names = ["Kuala Lumpur", "Pahang", "Kelantan", "Terengganu", "Kedah", "Melaka", "Johor", "Perlis", "Perak"]
+# Pastel Pallete
+colors = sns.color_palette("pastel", len(cities_names))
+
+
+# City Icons
+city_icons = {
+    "PERLIS": "♕",
+    "KEDAH": "♖",
+    "PENANG": "♗",
+    "PERAK": "♘",
+    "KELANTAN": "♙",
+    "PAHANG": "♔",
+    "JOHOR": "♚",
+    "MELAKA": "♛",
+    "SELANGOR": "♜",
+    "TERENGGANU": "♝"
+}
 
 # Input koordinat untuk setiap kota
 st.title("Input Coordinates for Cities")
