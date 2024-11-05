@@ -7,7 +7,6 @@ import streamlit as st
 
 # Nama kota-kota yang tersedia
 cities_names = ["Kuala Lumpur", "Pahang", "Kelantan", "Terengganu", "Kedah", "Melaka", "Johor", "Perlis", "Perak"]
-# Pastel Pallete
 
 # Input koordinat untuk setiap kota
 st.title("Input Coordinates for Cities")
@@ -42,25 +41,6 @@ city_icons = {
     "Perlis": "♛",
     "Perak": "♜"
 }
-
-# Visualisasi awal kota dan rute dengan ikon
-fig, ax = plt.subplots()
-ax.grid(False)
-for i, (city, (city_x, city_y)) in enumerate(city_coords.items()):
-    color = colors[i]
-    icon = city_icons.get(city, "•")  # Gunakan ikon atau '•' jika ikon tiada
-    ax.scatter(city_x, city_y, c=[color], s=1200, zorder=2)
-    ax.annotate(icon, (city_x, city_y), fontsize=30, ha='center', va='center', zorder=3)  # Letak ikon
-    ax.annotate(city, (city_x, city_y), fontsize=12, ha='center', va='bottom', xytext=(0, -30), textcoords='offset points')
-    
-    # Sambungkan garis antara kota
-    for j, (other_city, (other_x, other_y)) in enumerate(city_coords.items()):
-        if i != j:
-            ax.plot([city_x, other_x], [city_y, other_y], color='gray', linestyle='-', linewidth=1, alpha=0.1)
-
-fig.set_size_inches(10, 8)
-st.pyplot(fig)
-
 
 # Fungsi-fungsi untuk algoritma genetika
 def initial_population(cities_list, n_population=250):
@@ -126,26 +106,27 @@ def run_ga(cities_names, n_population, n_generations, crossover_per, mutation_pe
         population = offspring_list + parents_list
     return population
 
-# Jalankan algoritma dan paparkan hasil
-best_population = run_ga(cities_names, n_population, n_generations, crossover_per, mutation_per)
-best_route = min(best_population, key=total_dist_individual)
-min_distance = total_dist_individual(best_route)
+# Butang Submit
+if st.button("Submit"):
+    # Jalankan algoritma dan paparkan hasil setelah Submit ditekan
+    best_population = run_ga(cities_names, n_population, n_generations, crossover_per, mutation_per)
+    best_route = min(best_population, key=total_dist_individual)
+    min_distance = total_dist_individual(best_route)
 
-st.write("Best Route:", best_route)
-st.write("Minimum Distance:", min_distance)
+    st.write("Best Route:", best_route)
+    st.write("Minimum Distance:", min_distance)
 
+    # Visualisasi rute terbaik
+    x_best_route = [city_coords[city][0] for city in best_route] + [city_coords[best_route[0]][0]]
+    y_best_route = [city_coords[city][1] for city in best_route] + [city_coords[best_route[0]][1]]
 
-# Visualisasi rute terbaik
-x_best_route = [city_coords[city][0] for city in best_route] + [city_coords[best_route[0]][0]]
-y_best_route = [city_coords[city][1] for city in best_route] + [city_coords[best_route[0]][1]]
+    fig, ax = plt.subplots()
+    ax.plot(x_best_route, y_best_route, '--go', label='Best Route', linewidth=2.5)
+    plt.legend()
 
-fig, ax = plt.subplots()
-ax.plot(x_best_route, y_best_route, '--go', label='Best Route', linewidth=2.5)
-plt.legend()
+    for i, city in enumerate(best_route):
+        ax.annotate(f"{i+1}- {city}", (x_best_route[i], y_best_route[i]), fontsize=12)
 
-for i, city in enumerate(best_route):
-    ax.annotate(f"{i+1}- {city}", (x_best_route[i], y_best_route[i]), fontsize=12)
-
-plt.title(f"Best TSP Route Using GA\nTotal Distance: {round(min_distance, 3)}", fontsize=18)
-fig.set_size_inches(10, 8)
-st.pyplot(fig)
+    plt.title(f"Best TSP Route Using GA\nTotal Distance: {round(min_distance, 3)}", fontsize=18)
+    fig.set_size_inches(10, 8)
+    st.pyplot(fig)
