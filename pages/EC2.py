@@ -8,30 +8,20 @@ import pandas as pd
 import seaborn as sns
 import streamlit as st
 
-# Nama kota-kota dan koordinat awal mereka
-cities_coords = {
-    "Kuala Lumpur": (3, 5),
-    "Pahang": (8, 6),
-    "Kelantan": (7, 9),
-    "Terengganu": (2, 8),
-    "Kedah": (4, 2),
-    "Melaka": (1, 1),
-    "Johor": (6, 3),
-    "Perlis": (0, 4),
-    "Perak": (5, 7)
-}
+# Nama kota-kota yang tersedia
+cities_names = ["Kuala Lumpur", "Pahang", "Kelantan", "Terengganu", "Kedah", "Melaka", "Johor", "Perlis", "Perak"]
 
 # Input koordinat untuk setiap kota
 st.title("Input Coordinates for Cities")
 city_coords = {}
-for i, (city, default_coords) in enumerate(cities_coords.items()):
+for i, city in enumerate(cities_names):
     col1, col2, col3 = st.columns(3)
     with col1:
         city_name = st.text_input(f"City {i+1}", city, key=f"city_name_{i}")
     with col2:
-        x_coord = st.number_input(f"x-coordinate (City {i+1})", value=default_coords[0], step=1, key=f"x_{i}")
+        x_coord = st.number_input(f"x-coordinate (City {i+1})", step=1, key=f"x_{i}")
     with col3:
-        y_coord = st.number_input(f"y-coordinate (City {i+1})", value=default_coords[1], step=1, key=f"y_{i}")
+        y_coord = st.number_input(f"y-coordinate (City {i+1})", step=1, key=f"y_{i}")
     city_coords[city_name] = (x_coord, y_coord)
 
 # Parameter untuk algoritma genetika
@@ -146,6 +136,7 @@ min_distance = total_dist_individual(best_route)
 
 st.write("Best Route:", best_route)
 st.write("Minimum Distance:", min_distance)
+
 
 # Visualisasi rute terbaik
 x_best_route = [city_coords[city][0] for city in best_route] + [city_coords[best_route[0]][0]]
