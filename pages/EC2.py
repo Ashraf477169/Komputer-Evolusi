@@ -128,11 +128,11 @@ def run_ga(cities_names, n_population, n_generations, crossover_per, mutation_pe
 
 # Jalankan algoritma dan paparkan hasil
 best_population = run_ga(cities_names, n_population, n_generations, crossover_per, mutation_per)
-min_distance = total_dist_individual(best_route)
 best_route = min(best_population, key=total_dist_individual)
+min_distance = total_dist_individual(best_route)
 
-st.write("Minimum Distance:", min_distance)
 st.write("Best Route:", best_route)
+st.write("Minimum Distance:", min_distance)
 
 
 # Visualisasi rute terbaik
