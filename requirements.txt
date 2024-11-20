@@ -1,7 +1,9 @@
 matplotlib
 seaborn
+ollama
+torch
 numpy
 Pillow
 streamlit
 streamlit_drawable_canvas
-opencv-contrib-pyhton-headless
+opencv-contrib-python-headless
