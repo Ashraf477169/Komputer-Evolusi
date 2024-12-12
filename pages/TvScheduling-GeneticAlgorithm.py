@@ -40,32 +40,27 @@ def main():
 
     # Genetic Algorithm Parameters
     st.header("Input Genetic Algorithm Parameters")
+    co_r = st.slider(
+        "Crossover Rate (CO_R)",
+        min_value=0.0,
+        max_value=0.95,
+        value=DEFAULT_CO_R,
+        step=0.01,
+        help="Select the crossover rate (range: 0.0 to 0.95)."
+    )
 
-    # Input parameters for three trials
-    trial_params = []
-    for trial in range(1, 4):
-        st.subheader(f"Trial {trial}")
-        co_r = st.slider(
-            f"Crossover Rate (CO_R) - Trial {trial}",
-            min_value=0.0,
-            max_value=0.95,
-            value=DEFAULT_CO_R,
-            step=0.01,
-            key=f"co_r_{trial}",
-            help="Select the crossover rate (range: 0.0 to 0.95)."
-        )
+    mut_r = st.slider(
+        "Mutation Rate (MUT_R)",
+        min_value=0.01,
+        max_value=0.05,
+        value=DEFAULT_MUT_R,
+        step=0.01,
+        help="Select the mutation rate (range: 0.01 to 0.05)."
+    )
 
-        mut_r = st.slider(
-            f"Mutation Rate (MUT_R) - Trial {trial}",
-            min_value=0.01,
-            max_value=0.05,
-            value=DEFAULT_MUT_R,
-            step=0.01,
-            key=f"mut_r_{trial}",
-            help="Select the mutation rate (range: 0.01 to 0.05)."
-        )
-
-        trial_params.append((co_r, mut_r))
+    st.write("### Selected Parameters:")
+    st.write(f"- **Crossover Rate (CO_R)**: {co_r}")
+    st.write(f"- **Mutation Rate (MUT_R)**: {mut_r}")
 
     # Sample rating programs dataset for each time slot.
     ratings = program_ratings_dict
@@ -121,7 +116,7 @@ def main():
         return schedule
 
     # genetic algorithms with parameters
-    def genetic_algorithm(initial_schedule, generations=GEN, population_size=POP, crossover_rate=DEFAULT_CO_R, mutation_rate=DEFAULT_MUT_R, elitism_size=EL_S):
+    def genetic_algorithm(initial_schedule, generations=GEN, population_size=POP, crossover_rate=co_r, mutation_rate=mut_r, elitism_size=EL_S):
         population = [initial_schedule]
 
         for _ in range(population_size - 1):
@@ -159,35 +154,21 @@ def main():
     all_possible_schedules = initialize_pop(all_programs, all_time_slots)
     initial_best_schedule = finding_best_schedule(all_possible_schedules)
 
-    st.header("Results of Trials")
-    for trial_index, (co_r, mut_r) in enumerate(trial_params, start=1):
-        st.subheader(f"Trial {trial_index}")
+    rem_t_slots = len(all_time_slots) - len(initial_best_schedule)
+    genetic_schedule = genetic_algorithm(initial_best_schedule, generations=GEN, population_size=POP, elitism_size=EL_S)
 
-        genetic_schedule = genetic_algorithm(
-            initial_best_schedule,
-            generations=GEN,
-            population_size=POP,
-            crossover_rate=co_r,
-            mutation_rate=mut_r,
-            elitism_size=EL_S
-        )
+    final_schedule = initial_best_schedule + genetic_schedule[:rem_t_slots]
 
-        rem_t_slots = len(all_time_slots) - len(initial_best_schedule)
-        final_schedule = initial_best_schedule + genetic_schedule[:rem_t_slots]
+    st.write("\nFinal Optimal Schedule:")
+    schedule_data = []
+    for time_slot, program in enumerate(final_schedule):
+        schedule_data.append({"Time Slot": f"{all_time_slots[time_slot]:02d}:00", "Program": program})
 
-        schedule_data = []
-        for time_slot, program in enumerate(final_schedule):
-            schedule_data.append({"Time Slot": f"{all_time_slots[time_slot]:02d}:00", "Program": program})
+    # Display schedule in table format
+    df_schedule = pd.DataFrame(schedule_data)
+    st.table(df_schedule)
 
-        # Display schedule in table format
-        df_schedule = pd.DataFrame(schedule_data)
-        st.write(f"### Parameters:")
-        st.write(f"- **Crossover Rate (CO_R)**: {co_r}")
-        st.write(f"- **Mutation Rate (MUT_R)**: {mut_r}")
-        st.write("### Resulting Schedule:")
-        st.table(df_schedule)
-
-        st.write("Total Ratings:", fitness_function(final_schedule))
+    st.write("Total Ratings:", fitness_function(final_schedule))
 
 if __name__ == "__main__":
     main()
