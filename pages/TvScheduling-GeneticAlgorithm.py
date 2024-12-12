@@ -1,6 +1,7 @@
 import csv
 import streamlit as st
 import random
+import pandas as pd
 
 ##################################### FILE PROCESSING ###################################################
 # Function to read the CSV file and convert it to the desired format
@@ -159,8 +160,13 @@ def main():
     final_schedule = initial_best_schedule + genetic_schedule[:rem_t_slots]
 
     st.write("\nFinal Optimal Schedule:")
+    schedule_data = []
     for time_slot, program in enumerate(final_schedule):
-        st.write(f"Time Slot {all_time_slots[time_slot]:02d}:00 - Program {program}")
+        schedule_data.append({"Time Slot": f"{all_time_slots[time_slot]:02d}:00", "Program": program})
+
+    # Display schedule in table format
+    df_schedule = pd.DataFrame(schedule_data)
+    st.table(df_schedule)
 
     st.write("Total Ratings:", fitness_function(final_schedule))
 
