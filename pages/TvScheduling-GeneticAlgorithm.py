@@ -36,7 +36,7 @@ EL_S = 2
 
 # Streamlit UI
 def main():
-    st.title("Genetic Algorithm for Optimal TV Scheduling")
+    st.title("Genetic Algorithm for Optimal Scheduling")
 
     # Genetic Algorithm Parameters
     st.header("Input Genetic Algorithm Parameters")
@@ -162,14 +162,10 @@ def main():
     st.write("\nFinal Optimal Schedule:")
     schedule_data = []
     for time_slot, program in enumerate(final_schedule):
-        schedule_data.append({
-            "Time Slot": f"{all_time_slots[time_slot]:02d}:00",
-            "Program": program,
-            "Total Rating": ratings[program][time_slot]
-        })
+        schedule_data.append({"Time Slot": f"{all_time_slots[time_slot]:02d}:00", "Program": program})
 
-    # Convert to DataFrame and sort by Total Rating
-    df_schedule = pd.DataFrame(schedule_data).sort_values(by="Total Rating", ascending=False)
+    # Display schedule in table format
+    df_schedule = pd.DataFrame(schedule_data)
     st.table(df_schedule)
 
     st.write("Total Ratings:", fitness_function(final_schedule))
