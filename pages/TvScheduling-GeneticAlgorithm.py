@@ -28,7 +28,7 @@ program_ratings_dict = read_csv_to_dict(file_path)
 ratings = program_ratings_dict
 
 all_programs = list(ratings.keys())  # all programs
-all_time_slots = list(range(6, 24))  # time slots
+all_time_slots = list(range(6, 24))  # time slots (06:00 to 23:00)
 
 ######################################### DEFINING FUNCTIONS ########################################################################
 # defining fitness function
@@ -100,18 +100,22 @@ def generate_schedule_table(schedule, time_slots):
 st.title("TV Program Scheduler with Genetic Algorithm")
 
 # Input parameters
-st.write("### Input Genetic Algorithm Parameters")
 crossover_rate = st.slider("Crossover Rate (CO_R)", min_value=0.0, max_value=1.0, value=0.8, step=0.01)
 mutation_rate = st.slider("Mutation Rate (MUT_R)", min_value=0.0, max_value=1.0, value=0.2, step=0.01)
 
 # Genetic Algorithm
-st.write("### Running Genetic Algorithm...")
+st.write("Running Genetic Algorithm...")
 initial_schedule = random.sample(all_programs, len(all_programs))
 genetic_schedule = genetic_algorithm(
     initial_schedule,
     crossover_rate=crossover_rate,
     mutation_rate=mutation_rate
 )
+
+# Ensure schedule matches all time slots
+if len(genetic_schedule) < len(all_time_slots):
+    additional_programs = random.choices(all_programs, k=len(all_time_slots) - len(genetic_schedule))
+    genetic_schedule += additional_programs
 
 # Display the final schedule in a Streamlit table
 st.write("### Final Optimal TV Schedule")
