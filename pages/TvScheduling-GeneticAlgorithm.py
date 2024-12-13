@@ -2,6 +2,7 @@ import csv
 import streamlit as st
 import random
 import pandas as pd
+import matplotlib.pyplot as plt
 
 ##################################### FILE PROCESSING ###################################################
 # Function to read the CSV file and convert it to the desired format
@@ -169,7 +170,16 @@ def main():
         df_schedule = pd.DataFrame(schedule_data)
         st.table(df_schedule)
 
-        st.write("Total Ratings:", fitness_function(final_schedule))
+        total_ratings = fitness_function(final_schedule)
+        st.write("Total Ratings:", total_ratings)
+
+        # Plotting the results
+        st.write("\n### Ratings vs Parameters")
+        fig, ax = plt.subplots()
+        ax.bar(["Crossover Rate", "Mutation Rate"], [co_r, mut_r], color=['blue', 'green'])
+        ax.set_ylabel("Parameter Values")
+        ax.set_title("Effect of Parameters on Ratings")
+        st.pyplot(fig)
 
 if __name__ == "__main__":
     main()
