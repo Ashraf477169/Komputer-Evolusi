@@ -96,17 +96,16 @@ def generate_schedule_table(schedule, time_slots):
     return table_data
 
 ##################################### STREAMLIT UI ######################################################
+# Default values for genetic algorithm parameters
+DEFAULT_CO_R = 0.8
+DEFAULT_MUT_R = 0.2
+
 # Streamlit UI
 st.title("TV Program Scheduler with Genetic Algorithm")
 
-# Fixed parameters
-crossover_rate = 0.8  # Fixed CO_R = 0.8
-mutation_rate = 0.2   # Fixed MUT_R = 0.2
-
-# Display fixed parameters
-st.write("### Genetic Algorithm Parameters:")
-st.write(f"- **Crossover Rate (CO_R)**: {crossover_rate}")
-st.write(f"- **Mutation Rate (MUT_R)**: {mutation_rate}")
+# Input parameters
+crossover_rate = st.slider("Crossover Rate (CO_R)", min_value=0.0, max_value=1.0, value=DEFAULT_CO_R, step=0.01)
+mutation_rate = st.slider("Mutation Rate (MUT_R)", min_value=0.0, max_value=1.0, value=DEFAULT_MUT_R, step=0.01)
 
 # Genetic Algorithm
 st.write("Running Genetic Algorithm...")
