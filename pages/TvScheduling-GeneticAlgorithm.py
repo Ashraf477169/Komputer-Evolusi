@@ -1,3 +1,7 @@
+Share
+
+
+You said:
 import csv
 import streamlit as st
 import random
@@ -150,26 +154,25 @@ def main():
         return population[0]
 
     ############################################# RESULTS ###############################################
-    if st.button("Calculate Optimal Schedule"):
-        # brute force
-        all_possible_schedules = initialize_pop(all_programs, all_time_slots)
-        initial_best_schedule = finding_best_schedule(all_possible_schedules)
+    # brute force
+    all_possible_schedules = initialize_pop(all_programs, all_time_slots)
+    initial_best_schedule = finding_best_schedule(all_possible_schedules)
 
-        rem_t_slots = len(all_time_slots) - len(initial_best_schedule)
-        genetic_schedule = genetic_algorithm(initial_best_schedule, generations=GEN, population_size=POP, elitism_size=EL_S)
+    rem_t_slots = len(all_time_slots) - len(initial_best_schedule)
+    genetic_schedule = genetic_algorithm(initial_best_schedule, generations=GEN, population_size=POP, elitism_size=EL_S)
 
-        final_schedule = initial_best_schedule + genetic_schedule[:rem_t_slots]
+    final_schedule = initial_best_schedule + genetic_schedule[:rem_t_slots]
 
-        st.write("\nFinal Optimal Schedule:")
-        schedule_data = []
-        for time_slot, program in enumerate(final_schedule):
-            schedule_data.append({"Time Slot": f"{all_time_slots[time_slot]:02d}:00", "Program": program})
+    st.write("\nFinal Optimal Schedule:")
+    schedule_data = []
+    for time_slot, program in enumerate(final_schedule):
+        schedule_data.append({"Time Slot": f"{all_time_slots[time_slot]:02d}:00", "Program": program})
 
-        # Display schedule in table format
-        df_schedule = pd.DataFrame(schedule_data)
-        st.table(df_schedule)
+    # Display schedule in table format
+    df_schedule = pd.DataFrame(schedule_data)
+    st.table(df_schedule)
 
-        st.write("Total Ratings:", fitness_function(final_schedule))
+    st.write("Total Ratings:", fitness_function(final_schedule))
 
 if __name__ == "__main__":
     main()
