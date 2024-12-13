@@ -99,9 +99,14 @@ def generate_schedule_table(schedule, time_slots):
 # Streamlit UI
 st.title("TV Program Scheduler with Genetic Algorithm")
 
-# Input parameters
-crossover_rate = st.slider("Crossover Rate (CO_R)", min_value=0.0, max_value=1.0, value=0.8, step=0.01)
-mutation_rate = st.slider("Mutation Rate (MUT_R)", min_value=0.0, max_value=1.0, value=0.2, step=0.01)
+# Fixed parameters
+crossover_rate = 0.8  # Fixed CO_R = 0.8
+mutation_rate = 0.2   # Fixed MUT_R = 0.2
+
+# Display fixed parameters
+st.write("### Genetic Algorithm Parameters:")
+st.write(f"- **Crossover Rate (CO_R)**: {crossover_rate}")
+st.write(f"- **Mutation Rate (MUT_R)**: {mutation_rate}")
 
 # Genetic Algorithm
 st.write("Running Genetic Algorithm...")
