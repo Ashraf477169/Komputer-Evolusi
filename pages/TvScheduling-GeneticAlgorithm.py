@@ -1,7 +1,3 @@
-Share
-
-
-You said:
 import csv
 import streamlit as st
 import random
