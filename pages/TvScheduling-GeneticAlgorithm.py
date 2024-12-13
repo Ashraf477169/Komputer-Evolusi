@@ -29,7 +29,7 @@ program_ratings_dict = read_csv_to_dict(file_path)
 ######################################### STREAMLIT UI ###################################################
 # Default values for genetic algorithm parameters
 DEFAULT_CO_R = 0.8
-DEFAULT_MUT_R = 0.06
+DEFAULT_MUT_R = 0.2
 GEN = 100
 POP = 50
 EL_S = 2
