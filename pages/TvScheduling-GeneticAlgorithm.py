@@ -33,6 +33,7 @@ DEFAULT_MUT_R = 0.2
 GEN = 100
 POP = 50
 EL_S = 2
+SEED = 42  # Seed for reproducibility
 
 # Streamlit UI
 def main():
@@ -52,10 +53,10 @@ def main():
     mut_r = st.slider(
         "Mutation Rate (MUT_R)",
         min_value=0.01,
-        max_value=0.05,
+        max_value=0.1,
         value=DEFAULT_MUT_R,
         step=0.01,
-        help="Select the mutation rate (range: 0.01 to 0.05)."
+        help="Select the mutation rate (range: 0.01 to 0.1)."
     )
 
     st.write("### Selected Parameters:")
@@ -78,28 +79,7 @@ def main():
 
     # initializing the population
     def initialize_pop(programs, time_slots):
-        if not programs:
-            return [[]]
-
-        all_schedules = []
-        for i in range(len(programs)):
-            for schedule in initialize_pop(programs[:i] + programs[i + 1:], time_slots):
-                all_schedules.append([programs[i]] + schedule)
-
-        return all_schedules
-
-    # selection
-    def finding_best_schedule(all_schedules):
-        best_schedule = []
-        max_ratings = 0
-
-        for schedule in all_schedules:
-            total_ratings = fitness_function(schedule)
-            if total_ratings > max_ratings:
-                max_ratings = total_ratings
-                best_schedule = schedule
-
-        return best_schedule
+        return [random.sample(programs, len(programs)) for _ in range(POP)]
 
     # Crossover
     def crossover(schedule1, schedule2):
@@ -108,21 +88,20 @@ def main():
         child2 = schedule2[:crossover_point] + schedule1[crossover_point:]
         return child1, child2
 
-    # mutating
+    # Mutation
     def mutate(schedule):
         mutation_point = random.randint(0, len(schedule) - 1)
         new_program = random.choice(all_programs)
         schedule[mutation_point] = new_program
         return schedule
 
-    # genetic algorithms with parameters
-    def genetic_algorithm(initial_schedule, generations=GEN, population_size=POP, crossover_rate=co_r, mutation_rate=mut_r, elitism_size=EL_S):
-        population = [initial_schedule]
+    # Genetic Algorithm
+    def genetic_algorithm(generations=GEN, population_size=POP, crossover_rate=co_r, mutation_rate=mut_r, elitism_size=EL_S):
+        # Set random seed for reproducibility
+        random.seed(SEED)
 
-        for _ in range(population_size - 1):
-            random_schedule = initial_schedule.copy()
-            random.shuffle(random_schedule)
-            population.append(random_schedule)
+        # Initialize population
+        population = initialize_pop(all_programs, all_time_slots)
 
         for generation in range(generations):
             new_population = []
@@ -145,30 +124,24 @@ def main():
 
                 new_population.extend([child1, child2])
 
-            population = new_population
+            population = new_population[:population_size]
 
-        return population[0]
+        return max(population, key=fitness_function)
 
     ############################################# RESULTS ###############################################
-    # brute force
-    all_possible_schedules = initialize_pop(all_programs, all_time_slots)
-    initial_best_schedule = finding_best_schedule(all_possible_schedules)
+    # Run Genetic Algorithm
+    optimal_schedule = genetic_algorithm()
 
-    rem_t_slots = len(all_time_slots) - len(initial_best_schedule)
-    genetic_schedule = genetic_algorithm(initial_best_schedule, generations=GEN, population_size=POP, elitism_size=EL_S)
-
-    final_schedule = initial_best_schedule + genetic_schedule[:rem_t_slots]
-
-    st.write("\nFinal Optimal Schedule:")
     schedule_data = []
-    for time_slot, program in enumerate(final_schedule):
+    for time_slot, program in enumerate(optimal_schedule):
         schedule_data.append({"Time Slot": f"{all_time_slots[time_slot]:02d}:00", "Program": program})
 
     # Display schedule in table format
     df_schedule = pd.DataFrame(schedule_data)
+    st.write("\nFinal Optimal Schedule:")
     st.table(df_schedule)
 
-    st.write("Total Ratings:", fitness_function(final_schedule))
+    st.write("Total Ratings:", fitness_function(optimal_schedule))
 
 if __name__ == "__main__":
     main()
