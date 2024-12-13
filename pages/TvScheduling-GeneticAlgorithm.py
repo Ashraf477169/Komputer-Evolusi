@@ -6,17 +6,18 @@ import matplotlib.pyplot as plt
 
 ##################################### FILE PROCESSING ###################################################
 # Function to read the CSV file and convert it to the desired format
-def read_csv_to_dict(file):
+def read_csv_to_dict(file_path):
     program_ratings = {}
 
-    reader = csv.reader(file)
-    # Skip the header
-    header = next(reader)
+    with open(file_path, mode='r', newline='', encoding='utf-8') as file:
+        reader = csv.reader(file)
+        # Skip the header
+        header = next(reader)
 
-    for row in reader:
-        program = row[0]
-        ratings = [float(x) for x in row[1:]]  # Convert the ratings to floats
-        program_ratings[program] = ratings
+        for row in reader:
+            program = row[0]
+            ratings = [float(x) for x in row[1:]]  # Convert the ratings to floats
+            program_ratings[program] = ratings
 
     return program_ratings
 
@@ -32,11 +33,11 @@ EL_S = 2
 def main():
     st.title("Genetic Algorithm for Optimal Scheduling")
 
-    # File Upload
-    uploaded_file = st.file_uploader("Upload the 'program_ratings.csv' file", type="csv")
+    # Upload CSV file
+    st.header("Upload Program Ratings File")
+    uploaded_file = st.file_uploader("Upload a CSV file with program ratings", type="csv")
 
     if uploaded_file is not None:
-        # Read the CSV file
         program_ratings_dict = read_csv_to_dict(uploaded_file)
 
         # Genetic Algorithm Parameters
@@ -79,28 +80,15 @@ def main():
 
         # initializing the population
         def initialize_pop(programs, time_slots):
-            if not programs:
-                return [[]]
-
-            all_schedules = []
-            for i in range(len(programs)):
-                for schedule in initialize_pop(programs[:i] + programs[i + 1:], time_slots):
-                    all_schedules.append([programs[i]] + schedule)
-
-            return all_schedules
+            population = []
+            for _ in range(POP):
+                schedule = random.sample(programs, len(programs))
+                population.append(schedule)
+            return population
 
         # selection
-        def finding_best_schedule(all_schedules):
-            best_schedule = []
-            max_ratings = 0
-
-            for schedule in all_schedules:
-                total_ratings = fitness_function(schedule)
-                if total_ratings > max_ratings:
-                    max_ratings = total_ratings
-                    best_schedule = schedule
-
-            return best_schedule
+        def select_best_schedules(population):
+            return sorted(population, key=fitness_function, reverse=True)[:EL_S]
 
         # Crossover
         def crossover(schedule1, schedule2):
@@ -117,24 +105,18 @@ def main():
             return schedule
 
         # genetic algorithms with parameters
-        def genetic_algorithm(initial_schedule, generations=GEN, population_size=POP, crossover_rate=co_r, mutation_rate=mut_r, elitism_size=EL_S):
-            population = [initial_schedule]
-
-            for _ in range(population_size - 1):
-                random_schedule = initial_schedule.copy()
-                random.shuffle(random_schedule)
-                population.append(random_schedule)
-
-            fitness_over_time = []
+        def genetic_algorithm(generations=GEN, crossover_rate=co_r, mutation_rate=mut_r):
+            population = initialize_pop(all_programs, all_time_slots)
+            best_fitness_over_time = []
 
             for generation in range(generations):
                 new_population = []
 
                 # Elitism
-                population.sort(key=lambda schedule: fitness_function(schedule), reverse=True)
-                new_population.extend(population[:elitism_size])
+                best_schedules = select_best_schedules(population)
+                new_population.extend(best_schedules)
 
-                while len(new_population) < population_size:
+                while len(new_population) < POP:
                     parent1, parent2 = random.choices(population, k=2)
                     if random.random() < crossover_rate:
                         child1, child2 = crossover(parent1, parent2)
@@ -148,20 +130,16 @@ def main():
 
                     new_population.extend([child1, child2])
 
-                population = new_population
-                fitness_over_time.append(fitness_function(population[0]))
+                population = new_population[:POP]
 
-            return population[0], fitness_over_time
+                # Track best fitness for this generation
+                best_fitness_over_time.append(fitness_function(max(population, key=fitness_function)))
+
+            return max(population, key=fitness_function), best_fitness_over_time
 
         ############################################# RESULTS ###############################################
-        # brute force
-        all_possible_schedules = initialize_pop(all_programs, all_time_slots)
-        initial_best_schedule = finding_best_schedule(all_possible_schedules)
-
-        rem_t_slots = len(all_time_slots) - len(initial_best_schedule)
-        genetic_schedule, fitness_over_time = genetic_algorithm(initial_best_schedule, generations=GEN, population_size=POP, elitism_size=EL_S)
-
-        final_schedule = initial_best_schedule + genetic_schedule[:rem_t_slots]
+        # Run Genetic Algorithm
+        final_schedule, fitness_progression = genetic_algorithm()
 
         st.write("\nFinal Optimal Schedule:")
         schedule_data = []
@@ -172,22 +150,16 @@ def main():
         df_schedule = pd.DataFrame(schedule_data)
         st.table(df_schedule)
 
-        # Display total ratings
-        total_rating = fitness_function(final_schedule)
-        st.write("Total Ratings:", total_rating)
-
-        # Plot fitness over time
-        st.write("### Fitness Over Generations")
+        # Display fitness progression
+        st.write("### Fitness Progression Over Generations:")
         fig, ax = plt.subplots()
-        ax.plot(range(1, GEN + 1), fitness_over_time, label="Fitness")
-        ax.set_xlabel("Generation")
-        ax.set_ylabel("Fitness")
+        ax.plot(range(1, GEN + 1), fitness_progression, marker='o')
         ax.set_title("Fitness Progression Over Generations")
-        ax.legend()
+        ax.set_xlabel("Generation")
+        ax.set_ylabel("Fitness Value")
         st.pyplot(fig)
 
-    else:
-        st.warning("Please upload the 'program_ratings.csv' file to proceed.")
+        st.write("Total Ratings:", fitness_function(final_schedule))
 
 if __name__ == "__main__":
     main()
