@@ -168,8 +168,16 @@ def main():
             "Total Rating": ratings[program][time_slot]
         })
 
-    # Convert to DataFrame and sort by Total Rating
-    df_schedule = pd.DataFrame(schedule_data).sort_values(by="Total Rating", ascending=False)
+    # Convert to DataFrame
+    df_schedule = pd.DataFrame(schedule_data)
+
+    # Display table with original time slots, sorted by Total Rating in a new view
+    st.write("### Schedule Sorted by Total Rating:")
+    df_sorted = df_schedule.sort_values(by="Total Rating", ascending=False)
+    st.table(df_sorted)
+
+    # Display table with original time slots
+    st.write("### Schedule by Time Slot:")
     st.table(df_schedule)
 
     st.write("Total Ratings:", fitness_function(final_schedule))
