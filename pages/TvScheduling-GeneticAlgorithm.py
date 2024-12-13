@@ -100,11 +100,12 @@ def generate_schedule_table(schedule, time_slots):
 st.title("TV Program Scheduler with Genetic Algorithm")
 
 # Input parameters
-crossover_rate = st.sidebar.slider("Crossover Rate (CO_R)", min_value=0.0, max_value=1.0, value=0.8, step=0.01)
-mutation_rate = st.sidebar.slider("Mutation Rate (MUT_R)", min_value=0.0, max_value=1.0, value=0.2, step=0.01)
+st.write("### Input Genetic Algorithm Parameters")
+crossover_rate = st.slider("Crossover Rate (CO_R)", min_value=0.0, max_value=1.0, value=0.8, step=0.01)
+mutation_rate = st.slider("Mutation Rate (MUT_R)", min_value=0.0, max_value=1.0, value=0.2, step=0.01)
 
 # Genetic Algorithm
-st.write("Running Genetic Algorithm...")
+st.write("### Running Genetic Algorithm...")
 initial_schedule = random.sample(all_programs, len(all_programs))
 genetic_schedule = genetic_algorithm(
     initial_schedule,
