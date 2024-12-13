@@ -2,6 +2,7 @@ import csv
 import streamlit as st
 import random
 import pandas as pd
+import matplotlib.pyplot as plt
 
 ##################################### FILE PROCESSING ###################################################
 # Function to read the CSV file and convert it to the desired format
@@ -21,7 +22,7 @@ def read_csv_to_dict(file_path):
     return program_ratings
 
 # Path to the CSV file
-file_path = 'pages/program_ratings.csv'
+file_path = 'program_ratings.csv'
 
 # Get the data in the required format
 program_ratings_dict = read_csv_to_dict(file_path)
@@ -124,6 +125,8 @@ def main():
             random.shuffle(random_schedule)
             population.append(random_schedule)
 
+        fitness_over_time = []
+
         for generation in range(generations):
             new_population = []
 
@@ -146,8 +149,9 @@ def main():
                 new_population.extend([child1, child2])
 
             population = new_population
+            fitness_over_time.append(fitness_function(population[0]))
 
-        return population[0]
+        return population[0], fitness_over_time
 
     ############################################# RESULTS ###############################################
     # brute force
@@ -155,7 +159,7 @@ def main():
     initial_best_schedule = finding_best_schedule(all_possible_schedules)
 
     rem_t_slots = len(all_time_slots) - len(initial_best_schedule)
-    genetic_schedule = genetic_algorithm(initial_best_schedule, generations=GEN, population_size=POP, elitism_size=EL_S)
+    genetic_schedule, fitness_over_time = genetic_algorithm(initial_best_schedule, generations=GEN, population_size=POP, elitism_size=EL_S)
 
     final_schedule = initial_best_schedule + genetic_schedule[:rem_t_slots]
 
@@ -168,7 +172,19 @@ def main():
     df_schedule = pd.DataFrame(schedule_data)
     st.table(df_schedule)
 
-    st.write("Total Ratings:", fitness_function(final_schedule))
+    # Display total ratings
+    total_rating = fitness_function(final_schedule)
+    st.write("Total Ratings:", total_rating)
+
+    # Plot fitness over time
+    st.write("### Fitness Over Generations")
+    fig, ax = plt.subplots()
+    ax.plot(range(1, GEN + 1), fitness_over_time, label="Fitness")
+    ax.set_xlabel("Generation")
+    ax.set_ylabel("Fitness")
+    ax.set_title("Fitness Progression Over Generations")
+    ax.legend()
+    st.pyplot(fig)
 
 if __name__ == "__main__":
     main()
