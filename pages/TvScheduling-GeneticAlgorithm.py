@@ -107,6 +107,10 @@ st.title("TV Program Scheduler with Genetic Algorithm")
 crossover_rate = st.slider("Crossover Rate (CO_R)", min_value=0.0, max_value=0.95, value=DEFAULT_CO_R, step=0.01)
 mutation_rate = st.slider("Mutation Rate (MUT_R)", min_value=0.0, max_value=0.20, value=DEFAULT_MUT_R, step=0.01)
 
+# Display the selected Crossover Rate and Mutation Rate
+st.write(f"Selected Crossover Rate (CO_R): {crossover_rate}")
+st.write(f"Selected Mutation Rate (MUT_R): {mutation_rate}")
+
 # Genetic Algorithm
 st.write("Running Genetic Algorithm...")
 initial_schedule = random.sample(all_programs, len(all_programs))
